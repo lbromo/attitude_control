@@ -1,11 +1,10 @@
-
 module SpacecraftModel
     using LinearAlgebra, DifferentialEquations, StaticArrays, Parameters
     
     export run_simulation
 
     @with_kw mutable struct Internal_State{T,N} <: DEDataArray{T,N}
-        x :: Array{T,N} = zeros(3)
+        x :: Array{T,N} = zeros(3) # Not used, needs to be there for DEDataArray
         u :: Array{T,N} = zeros(3) # Control torque
         h :: Array{T,N} = zeros(3) # Internal momentum
         d :: Array{T,N} = zeros(3) # Disturbance torque
@@ -27,7 +26,7 @@ module SpacecraftModel
     ∂q(x) = ∂q(q(x), ω(x))
 
     ∂ω(ω, J, u, h, d) = inv(J) * (-cross(ω, J*ω + h) + u + d)
-    ∂ω(x, p) = ∂ω(ω(x), p.J, p.x, p.h, p.d)
+    ∂ω(x, p) = ∂ω(ω(x), p.J, p.u, p.h, p.d)
 
     function ∂f!(∂x, x, p::Internal_State, t)
         ∂x[:] = [∂q(x); ∂ω(x, p)]
