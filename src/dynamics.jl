@@ -6,19 +6,21 @@ module SpacecraftModel
 
     ## Helper functions 
     get_states(int) = (Quaternion(int.u[1:4]), int.u[5:7]); 
-    get_parameters(int) = int.p.pars;
+    get_parameters(int) = int.p.pars
+    get_time(int) = int.t
     get_ctrl_torque(int) = int.p.u; 
-    get_internal_momentum(int) = int.p.h; 
+    get_internal_momentum(int) = int.p.h
     get_disturbance_torque(int) = int.p.d
-    set_ctrl_torque!(int, u) = int.p.u = u; 
-    set_internal_momentum!(int, h) = int.p.h = h; 
+    set_ctrl_torque!(int, u) = int.p.u = u
+    set_internal_momentum!(int, h) = int.p.h = h
     set_disturbance_torque!(int, d) = int.p.d = d
 
     # Configuration parameters
     @with_kw mutable struct Parameters
         J::SMatrix{3,3,Real}
         Δt::Float64 = 1.0
-        orb::Union{Orbit, Nothing} = nothing
+        orbit::Union{OrbitPropagator, Nothing} = nothing
+        #orbit::Union{Orbit, Nothing} = nothing
 
         qᵣ::Union{Quaternion{Float64}, Nothing} = nothing
         ωᵣ::Union{SVector{3,Real}, Nothing} = nothing
