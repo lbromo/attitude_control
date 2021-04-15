@@ -1,41 +1,57 @@
 module SpacecraftModel
-    using LinearAlgebra, DifferentialEquations, StaticArrays, Parameters
+    using LinearAlgebra, DifferentialEquations, StaticArrays, Parameters, SatelliteToolbox
     
-    export run_simulation
+    export Parameters, run_simulation, get_states, get_parameters, get_time
 
-    @with_kw mutable struct Internal_State{T,N} <: DEDataArray{T,N}
-        x :: Array{T,N} = zeros(3) # Not used, needs to be there for DEDataArray
-        u :: Array{T,N} = zeros(3) # Control torque
-        h :: Array{T,N} = zeros(3) # Internal momentum
-        d :: Array{T,N} = zeros(3) # Disturbance torque
+    ## Helper functions 
+    get_states(int) = (Quaternion(int.u[1:4]), int.u[5:7]); 
+    get_parameters(int) = int.p
+    get_time(int) = int.t
+
+    # Configuration parameters
+    @with_kw mutable struct Parameters
+        J::SMatrix{3,3,Real}
+        L::SMatrix{3,4,Real}
+        Δt::Float64 = 1.0
+        orbit::Union{OrbitPropagator, Nothing} = nothing
+        
+        u_rw::SVector{4,Real} = zeros(4)
+        h_rw::SVector{4,Real} = zeros(4)
+        
+        u_mag::SVector{3,Real} = zeros(3)
+        u_dist::SVector{3,Real} = zeros(3)
     
-        J :: SMatrix{3,3,Real}
+        qᵣ::Quaternion{Float64} = Quaternion([1.0; 0.0; 0.0; 0.0])
+        ωᵣ::SVector{3,Real} = zeros(3)
+
+        extra_pars::Any = nothing
     end
     
+    # Helper function for dynamics
+    q(x) = x[1:4]; 
+    ω(x) = x[5:7]
+    ∂q(x) = ∂q(q(x), ω(x)); 
+    ∂ω(x, p) = ∂ω(ω(x), p.J, p.L * p.u_rw + p.u_mag, p.L * p.h_rw, p.u_dist)
+    
+    # Dynamic model
     Ω(ω) = [
         0    -ω[1] -ω[2] -ω[3]
         ω[1]  0     ω[3] -ω[2]
         ω[2] -ω[3]  0     ω[1]
         ω[3]  ω[2]  -ω[1] 0
     ]
-
-    q(x) = x[1:4]
-    ω(x) = x[5:7]
-
+    
     ∂q(q, ω) = 1/2 * Ω(ω) * q
-    ∂q(x) = ∂q(q(x), ω(x))
-
     ∂ω(ω, J, u, h, d) = inv(J) * (-cross(ω, J*ω + h) + u + d)
-    ∂ω(x, p) = ∂ω(ω(x), p.J, p.u, p.h, p.d)
 
-    function ∂f!(∂x, x, p::Internal_State, t)
+    function ∂f!(∂x, x, p::Parameters, t)
         ∂x[:] = [∂q(x); ∂ω(x, p)]
     end
 
-    function run_simulation(x0, J::Array{<:Real,2}, t_end::Real, callback=nothing)
+    function run_simulation(x0, pars::Parameters, t_end::Real, callback_set=nothing)
         tspan = (0.0, t_end)
-        s = Internal_State(J=J)
-        prob = ODEProblem(∂f!, x0, tspan, s, callback=callback)
+        #s = Internal_State(pars=pars)
+        prob = ODEProblem(∂f!, x0, tspan, pars, callback=callback_set)
         solve(prob)
     end
 
