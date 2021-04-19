@@ -49,9 +49,7 @@ module SpacecraftModel
     end
 
     function run_simulation(x0, pars::Parameters, t_end::Real, callback_set=nothing)
-        tspan = (0.0, t_end)
-        #s = Internal_State(pars=pars)
-        prob = ODEProblem(∂f!, x0, tspan, pars, callback=callback_set)
+        prob = ODEProblem(∂f!, x0, t_end, pars, callback=callback_set)
         solve(prob)
     end
 
