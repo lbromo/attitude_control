@@ -1,0 +1,87 @@
+{
+    "dependencies": [
+        {
+            "min_version": "2.11.5",
+            "name": "buildtools",
+            "type": "tools"
+        },
+        {
+            "min_version": "3.11.1",
+            "name": "libutil"
+        },
+        {
+            "min_version": "3.6.3",
+            "name": "libasf"
+        },
+        {
+            "min_version": "1.10.1",
+            "name": "libembed"
+        },
+        {
+            "min_version": "2.11.0",
+            "name": "libthirdparty"
+        },
+        {
+            "min_version": "3.0.1",
+            "name": "libgscsp"
+        },
+        {
+            "min_version": "3.6.1",
+            "name": "liblog"
+        },
+        {
+            "min_version": "4.10.0",
+            "name": "libparam"
+        },
+        {
+            "min_version": "3.5.4",
+            "name": "libgosh"
+        },
+        {
+            "min_version": "2.5.2",
+            "name": "liba3200dock"
+        },
+        {
+            "min_version": "4.0.1",
+            "name": "liba3200"
+        },
+        {
+            "min_version": "1.3.2",
+            "name": "libemul"
+        },
+        {
+            "min_version": "4.4.3",
+            "name": "libgssb"
+        },
+        {
+            "min_version": "2.0.2",
+            "name": "libp60_client"
+        },
+        {
+            "min_version": "1.2.21",
+            "name": "p60-pdu_client"
+        },
+        {
+            "min_version": "2.2.9",
+            "name": "p60-dock_client"
+        },
+        {
+            "min_version": "1.5.0",
+            "name": "gsw-600_client"
+        },
+        {
+            "branch": "julia_interop",
+            "name": "libadcs"
+        },
+        {
+            "min_version": "1.7.3",
+            "name": "pasw-linux-gcc-7",
+            "type": "docker"
+        },
+        {
+            "name": "libadcssim_2019a",
+            "path": "lib/libadcssim",
+            "branch": "julia_interop"
+        }
+    ]
+}
