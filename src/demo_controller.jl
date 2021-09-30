@@ -2,9 +2,14 @@ module DemoController
     using LinearAlgebra, StaticArrays, SatelliteToolbox, ReferenceFrameRotations, Parameters
     
     include("../src/dynamics.jl")
+    include("../src/utils.jl")
     using .SpacecraftModel
+    using .Utils
 
     export demo_ctrl, save_func, safe_func_type, ExtraParameters
+
+    const safe_func_type = Utils.default_save_func_types;
+    save_func = Utils.default_save_func;
 
     @with_kw mutable struct ExtraParameters
         # State feedback
@@ -20,7 +25,7 @@ module DemoController
         h_body = L*h;
         h₀ = h - pinv(L)*h_body
 
-        hₑ = p.h_ref- h₀
+        hₑ = p.h_ref - h₀
         u_rw = p.k_rw*hₑ
 
         # For now we just assume we can produce this torque directly.
@@ -47,45 +52,5 @@ module DemoController
         p.u_rw = pinv(p.L) * u + u_rw₀
         p.h_rw = p.h_rw + p.u_rw * p.Δt
         p.u_mag = u_mag
-    end
-
-    function save_func(x, t, int)
-        q = Quaternion(x[1:4])
-        p = get_parameters(int)
-    
-        (q, p.qᵣ, p.u_rw, p.h_rw, p.u_mag)
-    end
-
-    safe_func_type = Tuple{Quaternion{Float64}, Quaternion{Float64}, SVector{4, Float64}, SVector{4, Float64}, SVector{3, Float64}}
-
-
-    ## Private stuff
-    function get_q_lvlh(r, v)
-        r = r / norm(r)
-        v = v / norm(v)
-
-        x =  v           # Velocity vector
-        y = -cross(r, v) # negative momentum vector
-        z = -r           # Nadir vector
-
-        A_lvlh = DCM([
-            x y z
-        ])
-
-        q = dcm_to_quat(A_lvlh)
-        end
-
-    function LVLH_reference(int)
-        p = get_parameters(int)
-        _, r, v = propagate!(p.orbit, SpacecraftModel.get_time(int))
-
-        q = get_q_lvlh(r, v)
-
-        #Hanlde q sign
-        if(p.qᵣ' * q < 0)
-            q = -q
-        end
-
-        p.qᵣ = q
     end
 end
