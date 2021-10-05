@@ -38,11 +38,11 @@ module Utils
     function LVLH_reference(int)
         p = get_parameters(int)
         
-        #if(!p.orbit)
-        #    Quaternion(1.0, [0.0, 0.0, 0.0])
-        #end
+        if(!isnothing(p.orbit))
+            Quaternion(1.0, [0.0, 0.0, 0.0])
+        end
 
-        _, r, v = propagate!(p.orbit, get_time(int))
+        r, v = propagate!(p.orbit, get_time(int))
 
         q = get_q_lvlh(r, v)
 
@@ -57,21 +57,21 @@ module Utils
     function get_B_field_ECI(int)
         p = get_parameters(int)
 
-        #if(!p.orbit)
-        #    [0.0; 0.0; 0.0]
-        #end
+        if(!isnothing(p.orbit))
+            [0.0; 0.0; 0.0]
+        end
     
-        jd = p.orbit.orb.t + get_time(int) * 1/(24*60*60)
-
-        qᵣ = LVLH_reference(int)
-        ωᵣ = zeros(3)
+        if typeof(p.orbit) == OrbitPropagatorSGP4{Float64}
+            jd = p.orbit.sgp4d.epoch + get_time(int) * 1/(24*60*60)
+        else
+            jd = p.orbit.orb.t + get_time(int) * 1/(24*60*60)
+        end
     
-        _, r, v = propagate!(p.orbit, jd)
+        r, v = propagate!(p.orbit, jd)
         R = SatelliteToolbox.rECItoECEF(J2000(), PEF(), jd)
         
         r_ecef = R * r
-        v_ecef = R * v
-        
+
         (lat, lon, alt) = ECEFtoGeodetic(r_ecef)
         
         date_tuple = JDtoDate(jd)
@@ -79,11 +79,11 @@ module Utils
         start_date = Date(date_tuple[1], 1, 1)
         year = date_tuple[1] + yearfrac(start_date, date, DayCounts.Actual365Fixed())
         
-        B = igrf(year, alt, lat, lon,  Val(:geodetic))
+        igrf(year, alt, lat, lon,  Val(:geodetic))
     end
 
     function get_B_field_body(int)
-        q, ω = get_states(int)
+        q, _ = get_states(int)
         B = get_B_field_ECI(int)
         B = imag(inv(q) * B * q)
     end
