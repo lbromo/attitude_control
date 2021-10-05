@@ -2,20 +2,16 @@
 
 This code base is using the Julia Language and [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)
 to make a reproducible scientific project named
-> Attitude Control
 
-It is authored by Lasse Bromose.
+## How-to
+At the root of the project, start a new Julia terminal (tested with Julia 1.6.3), and run the following to instantiate
 
-To (locally) reproduce this project, do the following:
+```julia
+using DrWatson
+@quickactivate "Attitude Control" # Activate the DrWatson project
 
-0. Download this code base. Notice that raw data are typically not included in the
-   git-history and may need to be downloaded independently.
-1. Open a Julia console and do:
-   ```
-   julia> using Pkg
-   julia> Pkg.activate("path/to/this/project")
-   julia> Pkg.instantiate()
-   ```
+import Pkg
+Pkg.update() # Make sure all dependencies is installed
+```
 
-This will install all necessary packages for you to be able to run the scripts and
-everything should work out of the box.
+Then, you can use your favorite notebook editor/viewer to test out and use the notebooks found under `notebooks/`
