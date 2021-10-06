@@ -39,8 +39,7 @@ module DemoController
         p = get_parameters(int)
         q, ω = get_states(int)
 
-        qᵣ = LVLH_reference(int)
-        ωᵣ = zeros(3)
+        qᵣ, ωᵣ = LVLH_reference(int)
 
         qₑ = inv(qᵣ * q)
         ωₑ = ω - ωᵣ

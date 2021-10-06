@@ -2,6 +2,7 @@ module SMC
     using CBinding
     using StaticArrays
     using LinearAlgebra
+    using SatelliteToolbox
 
     include("utils.jl")
     include("dynamics.jl")
@@ -138,15 +139,15 @@ module SMC
         B = get_B_field_ECI(int)
 
         if(track_LVLH)
-            qᵣ = LVLH_reference(int)
+            qᵣ, ωᵣ = LVLH_reference(int)
         else
-            qᵣ = Quaternion(1.0, [0.0, 0.0, 0.0])
+            qᵣ, ωᵣ = (Quaternion(1.0, [0.0, 0.0, 0.0]), zeros(3))
         end
 
-        smc(q, ω, qᵣ, B, p.h_rw)
+        smc(q, ω, qᵣ, ωᵣ, B, p.h_rw)
     end
 
-    function smc(q, ω, qᵣ, B, h_rw)
+    function smc(q, ω, qᵣ, ωᵣ, B, h_rw)
         for i in 1:3
             ephem.magECI[i] = B[i]
         end
@@ -169,6 +170,10 @@ module SMC
         ctrl.ref_q.q3[] = qᵣ_imag[3]
         ctrl.ref_q.q4[] = real(qᵣ)
 
+        ctrl.ref_rate[1] = ωᵣ[1]
+        ctrl.ref_rate[2] = ωᵣ[2]
+        ctrl.ref_rate[3] = ωᵣ[3]
+
         for i in 1:4
             act_data.wheelMomentum[i] = h_rw[i]
         end
@@ -179,7 +184,6 @@ module SMC
         
         for i ∈ 1:3
             if(abs(ctrl.M[][i]) > 100)
-                #@show ctrl.M[]
                 ctrl.M[i] = sign(ctrl.M[][i]) * 100
             end
             ctrl.M[i] = ctrl.M[][i] * periph.act.torquer.am[][i] / 100

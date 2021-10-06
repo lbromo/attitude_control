@@ -32,34 +32,38 @@ module Utils
             x y z
         ])
 
-        q = dcm_to_quat(A_lvlh)
+        dcm_to_quat(A_lvlh)
+    end
+
+    function LVLH_reference(orb::OrbitPropagatorSGP4{Float64}, t::Float64)
+        r, v = propagate!(orb, t)
+        
+        qᵣ = get_q_lvlh(r, v)
+        ωᵣ = [0; -deg2rad(orb.sgp4d.n_0); 0]
+
+        (qᵣ, ωᵣ)
     end
 
     function LVLH_reference(int)
         p = get_parameters(int)
         
-        if(!isnothing(p.orbit))
-            Quaternion(1.0, [0.0, 0.0, 0.0])
-        end
-
-        r, v = propagate!(p.orbit, get_time(int))
-
-        q = get_q_lvlh(r, v)
-
+        qᵣ, ωᵣ = LVLH_reference(p.orbit, get_time(int))
+        
         #Hanlde q sign
-        if(p.qᵣ' * q < 0)
-            q = -q
+        if(p.qᵣ' * qᵣ < 0)
+            qᵣ = -qᵣ
         end
+        p.qᵣ = qᵣ # Save for sign check
 
-        p.qᵣ = q
+        (qᵣ, ωᵣ)
     end
 
     function get_B_field_ECI(int)
         p = get_parameters(int)
 
-        if(!isnothing(p.orbit))
-            [0.0; 0.0; 0.0]
-        end
+        #if(!isnothing(p.orbit))
+        #    return [0.0; 0.0; 0.0]
+        #end
     
         if typeof(p.orbit) == OrbitPropagatorSGP4{Float64}
             jd = p.orbit.sgp4d.epoch + get_time(int) * 1/(24*60*60)
@@ -67,7 +71,7 @@ module Utils
             jd = p.orbit.orb.t + get_time(int) * 1/(24*60*60)
         end
     
-        r, v = propagate!(p.orbit, jd)
+        r, _ = propagate!(p.orbit, jd)
         R = SatelliteToolbox.rECItoECEF(J2000(), PEF(), jd)
         
         r_ecef = R * r
@@ -78,7 +82,7 @@ module Utils
         date = Date(date_tuple[1:3]...)
         start_date = Date(date_tuple[1], 1, 1)
         year = date_tuple[1] + yearfrac(start_date, date, DayCounts.Actual365Fixed())
-        
+
         igrf(year, alt, lat, lon,  Val(:geodetic))
     end
 
