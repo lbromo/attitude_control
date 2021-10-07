@@ -133,16 +133,10 @@ module SMC
         return nothing
     end
 
-    function smc(int, track_LVLH=true)
+    function smc(int, qᵣ, ωᵣ)
         p = get_parameters(int)
         q, ω = get_states(int)
         B = get_B_field_ECI(int)
-
-        if(track_LVLH)
-            qᵣ, ωᵣ = LVLH_reference(int)
-        else
-            qᵣ, ωᵣ = (Quaternion(1.0, [0.0, 0.0, 0.0]), zeros(3))
-        end
 
         smc(q, ω, qᵣ, ωᵣ, B, p.h_rw)
     end
