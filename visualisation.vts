@@ -56,6 +56,50 @@
    <Layers>
     <BuiltinLayer Name="defaultLayer"/>
    </Layers>
+   <GroupGroundStations>
+    <GroundStation Name="gs">
+     <Prop2d>
+      <Icon Anchor="CENTER" Size="SMALL" Opacity="100">
+       <Font Size="8" Color="1 1 0"/>
+       <ImageLayer Type="Default"/>
+      </Icon>
+     </Prop2d>
+     <LatLongAlt>
+      <Value>
+       <Fixed Data="57.04722 9.9201 10"/>
+      </Value>
+     </LatLongAlt>
+     <SensorStation>
+      <SensorTarget>
+       <TargetEntity Name="Sol/Earth/SC"/>
+      </SensorTarget>
+      <Sensor Name="Default">
+       <SensorProp>
+        <SensorElliptical HalfAngleX="1.5707963267949" HalfAngleY="1.5707963267949"/>
+        <SensorGraphics Range="10000" VolumeColor="0.550408 1 0.499992" VolumeOpacity="10">
+         <SensorContour>
+          <LineStyle Color="0.100832 1 0" Style="SolidLine" Width="1"/>
+         </SensorContour>
+        </SensorGraphics>
+       </SensorProp>
+       <Geometry>
+        <Position>
+         <Value>
+          <Fixed Data="0 0 0"/>
+         </Value>
+        </Position>
+        <Orientation>
+         <Quaternion>
+          <Value>
+           <Fixed Data="1 0 0 0"/>
+          </Value>
+         </Quaternion>
+        </Orientation>
+       </Geometry>
+      </Sensor>
+     </SensorStation>
+    </GroundStation>
+   </GroupGroundStations>
   </Body>
   <Satellite Name="SC" ParentPath="Sol/Earth">
    <Track>
