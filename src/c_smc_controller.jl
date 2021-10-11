@@ -113,10 +113,10 @@ module SMC
         conf.gnc.ctrl.mw_smc[3]  =  0.0010
         conf.gnc.ctrl.mw_gain[1] = -0.0005
 
-        conf.gnc.ctrl.mw_dumpgain[]  = -0.001
+        conf.gnc.ctrl.mw_dumpgain[]  = -0.01
         conf.gnc.ctrl.mw_mw2trq[]    = -1.0
         conf.gnc.ctrl.mw_mangain[]   = -0.005
-        conf.gnc.ctrl.mw_manoffset[] =  0.005
+        conf.gnc.ctrl.mw_manoffset[] =  0.010
 
         conf.gnc.ctrl.mw_mannull[1] = -1
         conf.gnc.ctrl.mw_mannull[2] =  1
