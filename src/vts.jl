@@ -63,6 +63,34 @@ META_STOP
         file
     end
 
+    function generate_position_file(days, secs, xs, ys, zs, fname="pos.cic")
+        lines = String[]
+        for (day, sec, x, y, z) in zip(days, secs, xs, ys, zs)
+            day = Int(day)
+            p = [x; y; z]
+            if isnan(x)
+                continue
+            end
+            #x,y,z = [x; y; z] * 1e-3
+            line = "$day $sec $x $y $z"
+            push!(lines, line)
+        end
+        gen_file(POS_VTS_HEADER, lines, fname)
+    end
+
+    function generate_attitude_file(days, secs, qis, qjs, qks, qrs, fname="q.cic")
+        lines = String[]
+        for (day, sec, qi, qj, qk, qr) in zip(days, secs, qis, qjs, qks, qrs)
+            day = Int(day)
+            if isnan(qi)
+                continue
+            end
+            line = "$day $sec $qi $qj $qk $qr"
+            push!(lines, line)
+        end
+        gen_file(QUAT_VTS_HEADER, lines, fname)
+    end
+
     function generate_position_file(jd₀::Float64, p, t::Vector{Float64}, fname="pos.cic")
         lines = String[]
         for (t, p) in zip(t, p)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project Revision="8680">
- <General Name="" StartDateTime="59318 5358.796723" EndDateTime="59318 35444.095619"/>
+ <General Name="" StartDateTime="59502 71460.000000" EndDateTime="59502 73950.000000"/>
  <MetaData>
   <Description></Description>
  </MetaData>
@@ -8,9 +8,13 @@
   <Monitor X="0" Y="0" Height="1440" Width="2560"/>
   <Monitor X="2560" Y="0" Height="1440" Width="2560"/>
  </MonitorConfiguration>
- <StartOptions TimeRatio="1" UseStateTimeRatio="0" SysTimeSynced="0" Paused="0" Looped="0" Minimized="0" Hidden="0" AutoClosed="0"/>
+ <StartOptions TimeRatio="10" UseStateTimeRatio="0" SysTimeSynced="0" Paused="0" Looped="0" Minimized="0" Hidden="0" AutoClosed="0"/>
  <Timeshifting Enabled="0"/>
- <TimelineOptions ProjectLocked="1" CursorLocked="0" CursorRatio="0" ViewStart="33282 0.000000" ViewSpan="0" DateFormat="ISODate" NoBadgeFiltered="0" BadgeFiltered=""/>
+ <TimelineOptions ProjectLocked="1" CursorLocked="0" CursorRatio="0" ViewStart="33282 0.000000" ViewSpan="0" DateFormat="ISODate" NoBadgeFiltered="0" BadgeFiltered="">
+  <TimelineScenario Name="Scenario" Pos="0" Size="18"/>
+  <TimelineFile Name="pos.cic" Pos="1" Size="18" Badges="" Mode="DEFAULT" Overlay="false"/>
+  <TimelineFile Name="q.cic" Pos="2" Size="18" Badges="" Mode="DEFAULT" Overlay="false"/>
+ </TimelineOptions>
  <Sky>
   <Sun>
    <Prop2d>
@@ -36,6 +40,7 @@
  <ToBeUsedApps>
   <Application Name="SurfaceView" Id="0" Label="" AutoStarted="1"/>
   <Application Name="Celestia" Id="1" Label="" AutoStarted="1"/>
+  <Application Name="SensorView" Id="2" Label="" AutoStarted="1"/>
  </ToBeUsedApps>
  <Entities>
   <Body Name="Earth" ParentPath="Sol">
@@ -66,7 +71,7 @@
      </Prop2d>
      <LatLongAlt>
       <Value>
-       <Fixed Data="57.04722 9.9201 10"/>
+       <Fixed Data="48.08468 11.27815 594"/>
       </Value>
      </LatLongAlt>
      <SensorStation>
@@ -100,6 +105,15 @@
      </SensorStation>
     </GroundStation>
    </GroupGroundStations>
+   <GroupPointsOfInterest>
+    <PointOfInterest Name="newPOI">
+     <CoordinatesFile Name="poi.cic"/>
+     <Icon Anchor="CENTER" Size="MEDIUM" Opacity="100">
+      <Font Size="8" Color="1 1 1"/>
+      <ShapeLayer Shape="V_CROSS" Color="0.928832 0 1" Fill="0"/>
+     </Icon>
+    </PointOfInterest>
+   </GroupPointsOfInterest>
   </Body>
   <Satellite Name="SC" ParentPath="Sol/Earth">
    <Track>
@@ -131,17 +145,75 @@
     <Geometry>
      <Position>
       <Value>
-       <File Name="notebooks/pos.cic"/>
+       <File Name="notebooks/pos_1015b.cic"/>
       </Value>
      </Position>
      <Orientation>
       <Quaternion>
        <Value>
-        <File Name="notebooks/q.cic"/>
+        <File Name="notebooks/q_1015b.cic"/>
        </Value>
       </Quaternion>
      </Orientation>
     </Geometry>
+    <SensorSatellite>
+     <Sensor Name="Comms +x">
+      <SensorProp>
+       <SensorElliptical HalfAngleX="0.785398163397448" HalfAngleY="0.785398163397448"/>
+       <SensorGraphics Range="10000" VolumeColor="0 1 0" VolumeOpacity="30">
+        <SensorContour>
+         <LineStyle Color="0 1 0" Style="SolidLine" Width="1"/>
+        </SensorContour>
+        <SensorTrace Duration="0" Opacity="30">
+         <FixedColor Value="0 1 0"/>
+        </SensorTrace>
+       </SensorGraphics>
+      </SensorProp>
+      <Geometry>
+       <Position>
+        <Value>
+         <Fixed Data="0 0 0"/>
+        </Value>
+       </Position>
+       <Orientation>
+        <EulerAngle RotationSequence="321">
+         <Value>
+          <Fixed Data="0 45 0"/>
+         </Value>
+        </EulerAngle>
+       </Orientation>
+      </Geometry>
+     </Sensor>
+    </SensorSatellite>
+    <SensorSatellite>
+     <Sensor Name="Camera">
+      <SensorProp>
+       <SensorElliptical HalfAngleX="0.261799387799149" HalfAngleY="0.261799387799149"/>
+       <SensorGraphics Range="10000" VolumeColor="1 0 0" VolumeOpacity="30">
+        <SensorContour>
+         <LineStyle Color="1 0 0" Style="SolidLine" Width="1"/>
+        </SensorContour>
+        <SensorTrace Duration="48" Opacity="30">
+         <FixedColor Value="1 0 0"/>
+        </SensorTrace>
+       </SensorGraphics>
+      </SensorProp>
+      <Geometry>
+       <Position>
+        <Value>
+         <Fixed Data="0 0 0"/>
+        </Value>
+       </Position>
+       <Orientation>
+        <EulerAngle RotationSequence="321">
+         <Value>
+          <Fixed Data="0 -116 0"/>
+         </Value>
+        </EulerAngle>
+       </Orientation>
+      </Geometry>
+     </Sensor>
+    </SensorSatellite>
    </Component>
    <Events/>
   </Satellite>
@@ -151,7 +223,26 @@
  <States>
   <Instant Time="33282 0" TimeRatio="1" Label="Initial state">
    <AppState Id="0"/>
-   <AppState Id="1"/>
+   <AppState Id="1">
+    <Command Str="CMD STRUCT AimContourVisible &quot;Sol/Earth/SC/Comms +x&quot; false"/>
+    <Command Str="CMD STRUCT AimVolumeVisible &quot;Sol/Earth/SC/Comms +x&quot; false"/>
+   </AppState>
+   <AppState Id="2">
+    <Command Str="CMD PROP SceneReference &quot;Sol/Earth/SC/Camera&quot;"/>
+    <Command Str="CMD PROP CartesianPrecisionDisplay 10"/>
+    <Command Str="CMD PROP GeographicPrecisionDisplay 20"/>
+    <Command Str="CMD PROP MinStarCount 100"/>
+    <Command Str="CMD PROP MaxStarCount 100000"/>
+    <Command Str="CMD PROP TargetFramerate 25"/>
+    <Command Str="CMD PROP TrackSamplingResolution 25"/>
+    <Command Str="CMD STRUCT PlanetographicGridVisible &quot;Sol/Earth&quot; false"/>
+    <Command Str="CMD STRUCT AllPoiTextVisible &quot;Sol/Earth&quot; true"/>
+    <Command Str="CMD STRUCT AllRoiVisible &quot;Sol/Earth&quot; false"/>
+    <Command Str="CMD STRUCT AllRoiContourVisible &quot;Sol/Earth&quot; false"/>
+    <Command Str="CMD STRUCT AllRoiFillVisible &quot;Sol/Earth&quot; false"/>
+    <Command Str="CMD STRUCT AimContourVisible &quot;Sol/Earth/SC/Comms +x&quot; false"/>
+    <Command Str="CMD STRUCT AimTraceVisible &quot;Sol/Earth/SC/Comms +x&quot; false"/>
+   </AppState>
   </Instant>
  </States>
 </Project>
