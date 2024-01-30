@@ -3,7 +3,7 @@ module SpacecraftModel
     
     export run_simulation
 
-    @with_kw mutable struct Internal_State{T,N} <: DEDataArray{T,N}
+    @with_kw mutable struct Internal_State{T,N}
         x :: Array{T,N} = zeros(3) # Not used, needs to be there for DEDataArray
         u :: Array{T,N} = zeros(3) # Control torque
         h :: Array{T,N} = zeros(3) # Internal momentum
